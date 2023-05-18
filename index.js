@@ -48,6 +48,11 @@ async function run() {
       res.send(result)
 
     })
+
+    app.get('/postedToy', async(req,res)=> {
+      const result = await postedToyCollection.find().toArray()
+      res.send(result)
+    } )
     
    
     // Send a ping to confirm a successful connection
