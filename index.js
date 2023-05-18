@@ -53,6 +53,14 @@ async function run() {
       const result = await postedToyCollection.find().toArray()
       res.send(result)
     } )
+
+    // specific log user data who posted with prarams or do query email
+    app.get('/myPosted/:email',async(req,res)=>{
+      console.log(req.params.email)
+      const result = await postedToyCollection.find({email: req.params.email}).toArray();
+      res.send(result)
+    })
+  
     
    
     // Send a ping to confirm a successful connection
