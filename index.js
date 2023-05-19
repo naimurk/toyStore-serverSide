@@ -10,7 +10,7 @@ app.use(express.json())
 
 // database connection 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.50l1tkw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -33,7 +33,13 @@ async function run() {
       const result = await toydbCollection.find().toArray()
       res.send(result)
     })
-   
+
+    app.get('/toys/singleToys/:id', async(req,res)=> {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await toydbCollection.findOne(query)
+      res.send(result);
+    })
     app.get('/toys/:category', async (req, res) => {
       
     const result = await toydbCollection.find({
@@ -53,6 +59,13 @@ async function run() {
       const result = await postedToyCollection.find().toArray()
       res.send(result)
     } )
+
+    app.get('/postedToy/:id', async (req, res)=> {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await postedToyCollection.findOne(query);
+      res.send(result)
+    })
 
     // specific log user data who posted with prarams or do query email
     app.get('/myPosted/:email',async(req,res)=>{
