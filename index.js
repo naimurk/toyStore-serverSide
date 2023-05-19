@@ -28,6 +28,12 @@ async function run() {
     await client.connect();
     const toydbCollection = client.db('toyDb').collection('toy')
     const postedToyCollection = client.db('toyDb').collection('postedToy')
+    const indexKeys = { toyname: 1, category: 1 };
+    const indexOptions = { name: "toynameCategory" };
+    const result = await postedToyCollection.createIndex(indexKeys, indexOptions)
+    
+
+    
 
     app.get('/toys', async (req, res) => {
       const result = await toydbCollection.find().toArray()
@@ -46,6 +52,9 @@ async function run() {
       category : req.params.category}).toArray();
       res.send(result)
     });
+
+
+
 
     // posted toy 
     app.post ('/postedToy', async(req,res)=> {
@@ -73,6 +82,20 @@ async function run() {
       const result = await postedToyCollection.find({email: req.params.email}).toArray();
       res.send(result)
     })
+    
+    // search 
+    app.get("/getJobsByText/:text", async (req, res) => {
+      const text = req.params.text;
+      const result = await postedToyCollection
+        .find({
+          $or: [
+            { toyname: { $regex: text, $options: "i" } },
+            { category: { $regex: text, $options: "i" } },
+          ],
+        })
+        .toArray();
+      res.send(result);
+    });
   
     
    
