@@ -96,6 +96,25 @@ async function run() {
         .toArray();
       res.send(result);
     });
+
+    // update 
+    app.put("/updateJob/:id", async (req, res) => {
+      const id = req.params.id;
+      const body = req.body;
+      console.log(body);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          title: body.title,
+          price: body.price,
+          photo: body.photo,
+          category: body.category,
+          toyname: body.toyname
+        },
+      };
+      const result = await postedToyCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    });
   
     
    
