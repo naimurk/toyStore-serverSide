@@ -115,6 +115,14 @@ async function run() {
       const result = await postedToyCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
+    // delete 
+    app.delete('/deleted/:id', async(req, res)=> {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await postedToyCollection.deleteOne(query);
+      res.send(result)
+    })
   
     
    
