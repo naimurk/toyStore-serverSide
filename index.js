@@ -4,7 +4,13 @@ const app = express()
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 
-app.use(cors())
+const corsConfig = {
+  origin: '',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}
+app.use(cors(corsConfig))
+app.options("", cors(corsConfig))
 app.use(express.json())
 
 
@@ -25,7 +31,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    
     const toydbCollection = client.db('toyDb').collection('toy')
     const postedToyCollection = client.db('toyDb').collection('postedToy')
     const indexKeys = { toyname: 1, category: 1 };
@@ -77,11 +83,14 @@ async function run() {
     })
 
     // specific log user data who posted with prarams or do query email
+
     app.get('/myPosted/:email',async(req,res)=>{
       console.log(req.params.email)
       const result = await postedToyCollection.find({email: req.params.email}).toArray();
       res.send(result)
     })
+
+    // acending
     
     // search 
     app.get("/getJobsByText/:text", async (req, res) => {
@@ -123,6 +132,8 @@ async function run() {
       const result = await postedToyCollection.deleteOne(query);
       res.send(result)
     })
+
+    
   
     
    
