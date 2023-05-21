@@ -1,13 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const app = express()
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
+
 const port = process.env.PORT || 5000;
 
 const corsConfig = {
-  origin: '',
+  origin: '*',
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE']
+  optionSuccessStatus:200,
+  // methods: ['GET', 'POST', 'PUT', 'DELETE']
 }
 app.use(cors(corsConfig))
 app.options("", cors(corsConfig))
@@ -16,7 +19,7 @@ app.use(express.json())
 
 // database connection 
 
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.50l1tkw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -90,7 +93,20 @@ async function run() {
       res.send(result)
     })
 
-    // acending
+    // ascending
+    app.get('/ascendingPrice/:userEmail',async(req,res)=>{
+      // console.log(req.params.user)
+      const result = await postedToyCollection.find({email: req.params.userEmail}).sort({price : 1}).toArray();
+      res.send(result)
+    })
+    
+    // descending
+    app.get('/descendingPrice/:Email',async(req,res)=>{
+      // console.log(req.params.user)
+      const result = await postedToyCollection.find({email: req.params.Email}).sort({price : -1}).toArray();
+      res.send(result)
+    })
+
     
     // search 
     app.get("/getJobsByText/:text", async (req, res) => {
