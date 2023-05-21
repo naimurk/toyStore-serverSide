@@ -34,7 +34,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    
+    await client.connect();
     const toydbCollection = client.db('toyDb').collection('toy')
     const postedToyCollection = client.db('toyDb').collection('postedToy')
     const indexKeys = { toyname: 1, category: 1 };
@@ -45,21 +45,33 @@ async function run() {
     
 
     app.get('/toys', async (req, res) => {
-      const result = await toydbCollection.find().toArray()
+      try {
+        const result = await toydbCollection.find().toArray()
       res.send(result)
+      } catch (error) {
+        res.send(error)
+      }
     })
 
     app.get('/toys/singleToys/:id', async(req,res)=> {
-      const id = req.params.id;
+      try {
+        const id = req.params.id;
       const query = {_id : new ObjectId(id)}
       const result = await toydbCollection.findOne(query)
       res.send(result);
+      } catch (error) {
+        res.send(error)
+      }
     })
     app.get('/toys/:category', async (req, res) => {
       
-    const result = await toydbCollection.find({
-      category : req.params.category}).toArray();
-      res.send(result)
+      try {
+        const result = await toydbCollection.find({
+          category : req.params.category}).toArray();
+          res.send(result)
+      } catch (error) {
+        res.send(error)
+      }
     });
 
 
@@ -67,50 +79,75 @@ async function run() {
 
     // posted toy 
     app.post ('/postedToy', async(req,res)=> {
-      const booking = req.body
+      try {
+        const booking = req.body
       const result = await postedToyCollection.insertOne(booking)
       res.send(result)
+      } catch (error) {
+        res.send(error)
+      }
 
     })
 
     app.get('/postedToy', async(req,res)=> {
-      const result = await postedToyCollection.find().limit(20).toArray();
-      res.send(result)
+      try {
+        const result = await postedToyCollection.find().limit(20).toArray();
+        res.send(result)
+      } catch (error) {
+        res.send(error)
+      }
     } )
 
     app.get('/postedToy/:id', async (req, res)=> {
-      const id = req.params.id;
+      try {
+        const id = req.params.id;
       const query = {_id : new ObjectId(id)};
       const result = await postedToyCollection.findOne(query);
       res.send(result)
+      } catch (error) {
+        res.send(error)
+      }
     })
 
     // specific log user data who posted with prarams or do query email
 
     app.get('/myPosted/:email',async(req,res)=>{
-      console.log(req.params.email)
+       try {
+        console.log(req.params.email)
       const result = await postedToyCollection.find({email: req.params.email}).toArray();
       res.send(result)
+       } catch (error) {
+          res.send(error)
+       }
     })
 
     // ascending
     app.get('/ascendingPrice/:userEmail',async(req,res)=>{
       // console.log(req.params.user)
-      const result = await postedToyCollection.find({email: req.params.userEmail}).sort({price : 1}).toArray();
+      try {
+        const result = await postedToyCollection.find({email: req.params.userEmail}).sort({price : 1}).toArray();
       res.send(result)
+      } catch (error) {
+        res.send(error)
+      }
     })
     
     // descending
     app.get('/descendingPrice/:Email',async(req,res)=>{
       // console.log(req.params.user)
-      const result = await postedToyCollection.find({email: req.params.Email}).sort({price : -1}).toArray();
+      try {
+        const result = await postedToyCollection.find({email: req.params.Email}).sort({price : -1}).toArray();
       res.send(result)
+      } catch (error) {
+        res.send(error)
+      }
     })
 
     
     // search 
     app.get("/getJobsByText/:text", async (req, res) => {
-      const text = req.params.text;
+      try {
+        const text = req.params.text;
       const result = await postedToyCollection
         .find({
           $or: [
@@ -120,10 +157,14 @@ async function run() {
         })
         .toArray();
       res.send(result);
+      } catch (error) {
+        res.send(error)
+      }
     });
 
     // update 
     app.put("/updateJob/:id", async (req, res) => {
+     try {
       const id = req.params.id;
       const body = req.body;
       console.log(body);
@@ -139,14 +180,21 @@ async function run() {
       };
       const result = await postedToyCollection.updateOne(filter, updateDoc);
       res.send(result);
+     } catch (error) {
+      res.send(error)
+     }
     });
 
     // delete 
     app.delete('/deleted/:id', async(req, res)=> {
+     try {
       const id = req.params.id;
       const query = {_id : new ObjectId(id)}
       const result = await postedToyCollection.deleteOne(query);
       res.send(result)
+     } catch (error) {
+      res.send(error)
+     }
     })
 
     
